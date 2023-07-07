@@ -1,7 +1,7 @@
 import torch
 from torch import optim
 import torch.nn as nn
-from models import fcn, unet, pspnet, dfn
+from models import FCN, unet, pspnet, dfn
 from datasets.voc import to_rgb
 import torch.backends.cudnn as cudnn
 from torch.optim.lr_scheduler import LambdaLR
@@ -70,7 +70,7 @@ class Trainer:
                                 lr=self.cfg.lr,
                                 betas=[self.cfg.beta1, self.cfg.beta2])
         # Poly learning rate policy
-        lr_lambda = lambda n_iter: (1 - n_iter/self.cfg.n_iters)^self.cfg.lr_exp
+        lr_lambda = lambda n_iter: (1 - n_iter/self.cfg.n_iters)**(self.cfg.lr_exp)
         self.scheduler = LambdaLR(self.optim, lr_lambda=lr_lambda)
         self.c_loss = nn.CrossEntropyLoss().to(self.device)
         self.softmax = nn.Softmax(dim=1).to(self.device) # channel-wise softmax
