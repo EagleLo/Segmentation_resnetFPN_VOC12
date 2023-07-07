@@ -27,7 +27,6 @@ class Trainer:
         self.train_data_loader = train_data_loader
         self.val_data_loader = val_data_loader
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
         self.build_model()
 
     def denorm(self, x):
@@ -111,6 +110,8 @@ class Trainer:
             # output = output.view(output.size(0), output.size(1), -1)
             # target_var = target_var.view(target_var.size(0), -1)
             loss = self.c_loss(output, target_var)
+            accuracy = self.acc(output, target_var) 
+
 
             self.reset_grad()
             loss.backward()
@@ -124,9 +125,10 @@ class Trainer:
                 elapsed = str(timedelta(seconds=seconds))
                 print('Iteration : [{iter}/{iters}]\t'
                       'Time : {time}\t'
-                      'Loss : {loss:.4f}\t'.format(
+                      'Loss : {loss:.4f}\t'
+                      "Accuracy : {accuracy:.2f}".format(
                       iter=n_iter+1, iters=self.cfg.n_iters,
-                      time=elapsed, loss=loss.item()))
+                      time=elapsed, loss=loss.item(), accuracy = accuracy))
                 # try:
                 #     nsml.report(
                 #             train__loss=loss.item(),
@@ -137,7 +139,9 @@ class Trainer:
             if (n_iter + 1) % iters_per_epoch == 0:
                 self.validate(epoch)
                 epoch += 1
-
+    
+    def acc(self, output, target):
+        return (output == target).float().mean()
 
 
     def validate(self, epoch):
