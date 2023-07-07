@@ -10,14 +10,14 @@ import time
 from datetime import timedelta
 import visdom
 
-try:
-    import nsml
-    from nsml import Visdom
-    USE_NSML = True
-    print('NSML imported')
-except ImportError:
-    print('Cannot Import NSML. Use local GPU')
-    USE_NSML = False
+# try:
+#     import nsml
+#     from nsml import Visdom
+#     USE_NSML = True
+#     print('NSML imported')
+# except ImportError:
+#     print('Cannot Import NSML. Use local GPU')
+#     USE_NSML = False
 
 cudnn.benchmark = True # For fast speed
 

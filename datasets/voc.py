@@ -154,7 +154,7 @@ class VOC(data.Dataset):
 if __name__ == "__main__":
     print(sys.path[0])
     transform = transforms.Compose([transforms.Resize(128), transforms.ToTensor()])
-    data_set = VOC(root="./datasets", image_size=128, dataset_type='train', transform=transform, target_transform=to_mask)
+    data_set = VOC(root="/content/", image_size=128, dataset_type='train', transform=transform, target_transform=to_mask)
     # for data in data_set:
     #     print(np.array(data[0]).shape, np.array(data[1]).shape)
     # np.set_printoptions(threshold=np.nan)
