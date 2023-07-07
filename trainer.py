@@ -107,12 +107,16 @@ class Trainer:
             input_var = input.clone().to(self.device)
             target_var = target.to(self.device)
             output = self.model(input_var)
-            # output = output.view(output.size(0), output.size(1), -1)
-            # target_var = target_var.view(target_var.size(0), -1)
+            output = output.view(output.size(0), output.size(1), -1)
+            target_var = target_var.view(target_var.size(0), -1)
             loss = self.c_loss(output, target_var)
-            accuracy = self.acc(output, target_var) 
 
-
+            # accuracy = self.acc(output, target_var) 
+            accuracy = 0
+            print("train output shape")
+            print(output.shape())
+            print("train target_var shape")
+            print(target_var.shape())
             self.reset_grad()
             loss.backward()
             self.optim.step()
@@ -140,8 +144,8 @@ class Trainer:
                 self.validate(epoch)
                 epoch += 1
     
-    def acc(self, output, target):
-        return (output == target).float().mean()
+    # def acc(self, output, target):
+    #     return (output == target).float().mean()
 
 
     def validate(self, epoch):
@@ -164,6 +168,12 @@ class Trainer:
         loss = self.c_loss(output, target_var)
 
         output_label = torch.argmax(_output, dim=1)
+        print("val output_label shape")
+        print(output_label.shape())
+        print("val output shape")
+        print(output.shape())
+        print("val target_var shape")
+        print(target_var.shape())
 
         if (n_iter + 1) % self.cfg.log_step == 0:
             seconds = time.time() - val_start_time
