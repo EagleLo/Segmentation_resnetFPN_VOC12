@@ -43,7 +43,7 @@ class Trainer:
             'm_state_dict' : self.model.state_dict(),
             'optim' : self.optim.state_dict()
             }
-        torch.save(checkpoint)
+        torch.save(checkpoint, "/content/model_single")
 
     def pixel_acc(self):
         """ Calculate accuracy of pixel predictions """
@@ -57,7 +57,7 @@ class Trainer:
         if self.cfg.model == 'unet':
             self.model = unet.UNet(num_classes=21, in_dim=3, conv_dim=64)
         elif self.cfg.model == 'fcn8':
-            self.model = fcn.FCN8(num_classes=21)
+            self.model = FCN.FCN8(num_classes=21)
         elif self.cfg.model == 'pspnet_avg':
             self.model = pspnet.PSPNet(num_classes=21, pool_type='avg')
         elif self.cfg.model == 'pspnet_max':

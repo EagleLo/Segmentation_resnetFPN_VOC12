@@ -7,11 +7,11 @@ from torch.utils.data import DataLoader
 from datasets.voc import VOC
 from trainer import Trainer
 
-try:
-    from nsml import DATASET_PATH
-    path = DATASET_PATH
-except ImportError:
-    path = ''
+# try:
+#     from nsml import DATASET_PATH
+#     path = DATASET_PATH
+# except ImportError:
+#     path = ''
 
 def make_dir(dir):
     if not os.path.exists(dir):
@@ -89,8 +89,8 @@ if __name__ == '__main__':
     #TODO
 
     # Path
-    parser.add_argument('--model_save_path', type=str, default='./model')
-    parser.add_argument('--sample_save_path', type=str, default='./sample')
+    parser.add_argument('--model_save_path', type=str, default='/content/model_single')
+    parser.add_argument('--sample_save_path', type=str, default='/content/samples')
 
     # Logging setting
     parser.add_argument('--log_step', type=int, default=1)
@@ -99,9 +99,6 @@ if __name__ == '__main__':
     parser.add_argument('--sample_save_step', type=int, default=10, help='Saving epoch')
 
     # MISC
-
-
-
     config = parser.parse_args()
     print(config)
     main(config)
