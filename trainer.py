@@ -9,6 +9,7 @@ from torch.optim.lr_scheduler import LambdaLR
 import time
 from datetime import timedelta
 import visdom
+import wandb
 
 # try:
 #     import nsml
@@ -129,6 +130,8 @@ class Trainer:
                 if (n_iter + 1) % self.cfg.log_step == 0:
                     seconds = time.time() - train_start_time
                     elapsed = str(timedelta(seconds=seconds))
+                    wandb.log({"Iteration" : n_iter, "train_loss":loss, "train_accuracy" : accuracy})
+
                     print('Iteration : [{iter}/{iters}]\t'
                         'Time : {time}\t'
                         'Loss : {loss:.4f}\t'
@@ -181,6 +184,7 @@ class Trainer:
         if (n_iter + 1) % self.cfg.log_step == 0:
             seconds = time.time() - val_start_time
             elapsed = str(timedelta(seconds=seconds))
+            wandb.log({"Epoch" : epoch, "val_loss":loss, "val_accuracy" : accuracy})
             print('### Validation\t'
                   'Iteration : [{iter}/{iters}]\t'
                   'Time : {time:}\t'

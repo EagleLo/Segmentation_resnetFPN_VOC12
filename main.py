@@ -1,5 +1,6 @@
 import argparse
 import os
+import wandb
 
 from torchvision import transforms
 from torch.utils.data import DataLoader
@@ -97,6 +98,21 @@ if __name__ == '__main__':
     parser.add_argument('--val_step', type=int, default=1000)
     parser.add_argument('--model_save_step', type=int, default=10, help='Saving epoch')
     parser.add_argument('--sample_save_step', type=int, default=10, help='Saving epoch')
+
+    #Weight & Biases init:
+    wandb.init(
+      # Set the project where this run will be logged
+      project="preonboarding-Caltech",
+      # We pass a run name (otherwise it’ll be randomly assigned, like sunshine-lollypop-10)
+      name=f"segmentation_0",
+      # Track hyperparameters and run metadata
+      config={
+      "lr": 0.05,
+      "architecture": "Unet",
+      "dataset": "VOC12",
+      "epochs": 3,
+      "iterations" : 15
+      })
 
     # MISC
     config = parser.parse_args()
