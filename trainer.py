@@ -89,60 +89,62 @@ class Trainer:
         iters_per_epoch = len(self.train_data_loader.dataset) // self.cfg.train_batch_size
         if len(self.train_data_loader.dataset) % self.cfg.train_batch_size != 0:
             iters_per_epoch += 1
-        epoch = 1
+        epoch = 3
 
         torch.cuda.synchronize()  # parallel mode
         self.model.train()
 
         train_start_time = time.time()
         data_iter = iter(self.train_data_loader)
-        for n_iter in range(self.cfg.n_iters):
-            self.scheduler.step()
-            try:
-                input, target = next(data_iter)
-            except:
-                data_iter = iter(self.train_data_loader)
-                input, target = next(data_iter)
+        for i in range(epoch):
+            for n_iter in range(self.cfg.n_iters):
+                self.scheduler.step()
+                try:
+                    input, target = next(data_iter)
+                except:
+                    data_iter = iter(self.train_data_loader)
+                    input, target = next(data_iter)
 
-            input_var = input.clone().to(self.device)
-            target_var = target.to(self.device)
-            output = self.model(input_var)
-            output = output.view(output.size(0), output.size(1), -1)
-            target_var = target_var.view(target_var.size(0), -1)
-            loss = self.c_loss(output, target_var)
+                input_var = input.clone().to(self.device)
+                target_var = target.to(self.device)
+                output = self.model(input_var)
+                output = output.view(output.size(0), output.size(1), -1)
+                target_var = target_var.view(target_var.size(0), -1)
+                loss = self.c_loss(output, target_var)
 
-            # accuracy = self.acc(output, target_var) 
-            accuracy = 0
-            print("train output shape")
-            print(output.shape())
-            print("train target_var shape")
-            print(target_var.shape())
-            self.reset_grad()
-            loss.backward()
-            self.optim.step()
-            # print('Done')
+                
+                output_label = torch.argmax(output, dim=1)
+                accuracy = self.acc(output_label, target_var) 
+                # accuracy = 0
+                print("train output shape")
+                print(output.shape)
+                print("train target_var shape")
+                print(target_var.shape)
+                self.reset_grad()
+                loss.backward()
+                self.optim.step()
+                # print('Done')
 
-            # output_label = torch.argmax(_output, dim=1)
 
-            if (n_iter + 1) % self.cfg.log_step == 0:
-                seconds = time.time() - train_start_time
-                elapsed = str(timedelta(seconds=seconds))
-                print('Iteration : [{iter}/{iters}]\t'
-                      'Time : {time}\t'
-                      'Loss : {loss:.4f}\t'
-                      "Accuracy : {accuracy:.2f}".format(
-                      iter=n_iter+1, iters=self.cfg.n_iters,
-                      time=elapsed, loss=loss.item(), accuracy = accuracy))
-                # try:
-                #     nsml.report(
-                #             train__loss=loss.item(),
-                #             step=n_iter+1)
-                # except ImportError:
-                #     pass
+                if (n_iter + 1) % self.cfg.log_step == 0:
+                    seconds = time.time() - train_start_time
+                    elapsed = str(timedelta(seconds=seconds))
+                    print('Iteration : [{iter}/{iters}]\t'
+                        'Time : {time}\t'
+                        'Loss : {loss:.4f}\t'
+                        "Accuracy : {accuracy:.2f}".format(
+                        iter=n_iter+1, iters=self.cfg.n_iters,
+                        time=elapsed, loss=loss.item(), accuracy = accuracy))
+                    # try:
+                    #     nsml.report(
+                    #             train__loss=loss.item(),
+                    #             step=n_iter+1)
+                    # except ImportError:
+                    #     pass
 
-            if (n_iter + 1) % iters_per_epoch == 0:
-                self.validate(epoch)
-                epoch += 1
+                if (n_iter + 1) == self.cfg.n_iters:
+                    self.validate(i)
+                    # epoch += 1
     
     # def acc(self, output, target):
     #     return (output == target).float().mean()
@@ -155,7 +157,7 @@ class Trainer:
         data_iter = iter(self.val_data_loader)
         max_iter = len(self.val_data_loader)
         # for n_iter in range(max_iter): #FIXME
-        n_iter =  0
+        n_iter =  5
         input, target = next(data_iter)
 
         input_var = input.clone().to(self.device)
@@ -168,12 +170,13 @@ class Trainer:
         loss = self.c_loss(output, target_var)
 
         output_label = torch.argmax(_output, dim=1)
+        accuracy = self.acc(output_label, target)
         print("val output_label shape")
-        print(output_label.shape())
+        print(output_label.shape)
         print("val output shape")
-        print(output.shape())
+        print(output.shape)
         print("val target_var shape")
-        print(target_var.shape())
+        print(target_var.shape)
 
         if (n_iter + 1) % self.cfg.log_step == 0:
             seconds = time.time() - val_start_time
@@ -181,9 +184,11 @@ class Trainer:
             print('### Validation\t'
                   'Iteration : [{iter}/{iters}]\t'
                   'Time : {time:}\t'
-                  'Loss : {loss:.4f}\t'.format(
+                  'Loss : {loss:.4f}\t'
+                  "Accuracy : {accuracy:.2f}".format(
                   iter=n_iter+1, iters=max_iter,
-                  time=elapsed, loss=loss.item()))
+                  time=elapsed, loss=loss.item()),
+                  accuracy = accuracy)
             # try:
             #     nsml.report(
             #             val__loss=loss.item(),
