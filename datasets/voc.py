@@ -92,11 +92,11 @@ def make_path(root):
     train_items = []
     val_items = []
 
-    img_path = os.path.join(root, 'VOC2012', 'JPEGImages')
-    mask_path = os.path.join(root, 'VOC2012', 'SegmentationClass')
-    train_data_list = [l.strip('\n') for l in open(os.path.join(root, 'VOC2012',
+    img_path = os.path.join("/content/", root, 'VOC2012', 'JPEGImages')
+    mask_path = os.path.join("/content/",root, 'VOC2012', 'SegmentationClass')
+    train_data_list = [l.strip('\n') for l in open(os.path.join("/content/",root, 'VOC2012',
                 'ImageSets', 'Segmentation', 'train.txt')).readlines()]
-    val_data_list = [l.strip('\n') for l in open(os.path.join(root, 'VOC2012',
+    val_data_list = [l.strip('\n') for l in open(os.path.join("/content/",root, 'VOC2012',
                 'ImageSets', 'Segmentation', 'train.txt')).readlines()]
 
     for it in train_data_list:

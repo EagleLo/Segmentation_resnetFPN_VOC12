@@ -127,12 +127,12 @@ class Trainer:
                       'Loss : {loss:.4f}\t'.format(
                       iter=n_iter+1, iters=self.cfg.n_iters,
                       time=elapsed, loss=loss.item()))
-                try:
-                    nsml.report(
-                            train__loss=loss.item(),
-                            step=n_iter+1)
-                except ImportError:
-                    pass
+                # try:
+                #     nsml.report(
+                #             train__loss=loss.item(),
+                #             step=n_iter+1)
+                # except ImportError:
+                #     pass
 
             if (n_iter + 1) % iters_per_epoch == 0:
                 self.validate(epoch)
