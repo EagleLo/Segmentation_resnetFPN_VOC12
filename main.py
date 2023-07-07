@@ -11,7 +11,7 @@ from trainer import Trainer
 #     from nsml import DATASET_PATH
 #     path = DATASET_PATH
 # except ImportError:
-#     path = ''
+path = '/content/'
 
 def make_dir(dir):
     if not os.path.exists(dir):
