@@ -81,8 +81,8 @@ class Trainer:
             self.model = nn.DataParallel(self.model)
         self.model = self.model.to(self.device)
 
-        if USE_NSML:
-            self.viz = Visdom(visdom=visdom)
+        # if USE_NSML:
+        #     self.viz = Visdom(visdom=visdom)
 
     def train_val(self):
 
@@ -170,17 +170,17 @@ class Trainer:
                   'Loss : {loss:.4f}\t'.format(
                   iter=n_iter+1, iters=max_iter,
                   time=elapsed, loss=loss.item()))
-            try:
-                nsml.report(
-                        val__loss=loss.item(),
-                        step=epoch)
-            except ImportError:
-                pass
+            # try:
+            #     nsml.report(
+            #             val__loss=loss.item(),
+            #             step=epoch)
+            # except ImportError:
+            #     pass
 
-        if USE_NSML:
-            ori_pic = self.denorm(input_var[0:4])
-            self.viz.images(ori_pic, opts=dict(title='Original_' + str(epoch)))
-            gt_mask = to_rgb(target_var[0:4])
-            self.viz.images(gt_mask, opts=dict(title='GT_mask_' + str(epoch)))
-            model_mask = to_rgb(output_label[0:4].cpu())
-            self.viz.images(model_mask, opts=dict(title='Model_mask_' + str(epoch)))
+        # if USE_NSML:
+        #     ori_pic = self.denorm(input_var[0:4])
+        #     self.viz.images(ori_pic, opts=dict(title='Original_' + str(epoch)))
+        #     gt_mask = to_rgb(target_var[0:4])
+        #     self.viz.images(gt_mask, opts=dict(title='GT_mask_' + str(epoch)))
+        #     model_mask = to_rgb(output_label[0:4].cpu())
+        #     self.viz.images(model_mask, opts=dict(title='Model_mask_' + str(epoch)))
