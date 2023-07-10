@@ -11,14 +11,6 @@ from datetime import timedelta
 import visdom
 import wandb
 
-# try:
-#     import nsml
-#     from nsml import Visdom
-#     USE_NSML = True
-#     print('NSML imported')
-# except ImportError:
-#     print('Cannot Import NSML. Use local GPU')
-#     USE_NSML = False
 
 cudnn.benchmark = True # For fast speed
 
@@ -46,12 +38,16 @@ class Trainer:
         torch.save(checkpoint, "/content/model_single")
 
     def pixel_acc(self):
-        """ Calculate accuracy of pixel predictions """
+
         pass
 
+
     def mean_IU(self):
-        """ Calculate mean Intersection over Union """
+
         pass
+
+    def acc(self, output, target):
+        return (output == target).float().mean()
 
     def build_model(self):
         if self.cfg.model == 'unet':
@@ -148,9 +144,6 @@ class Trainer:
                 if (n_iter + 1) == self.cfg.n_iters:
                     self.validate(i)
                     # epoch += 1
-    
-    # def acc(self, output, target):
-    #     return (output == target).float().mean()
 
 
     def validate(self, epoch):
@@ -173,7 +166,8 @@ class Trainer:
         loss = self.c_loss(output, target_var)
 
         output_label = torch.argmax(_output, dim=1)
-        accuracy = self.acc(output_label, target)
+
+        accuracy = self.acc(output_label, target_var)
         print("val output_label shape")
         print(output_label.shape)
         print("val output shape")
@@ -193,17 +187,4 @@ class Trainer:
                   iter=n_iter+1, iters=max_iter,
                   time=elapsed, loss=loss.item()),
                   accuracy = accuracy)
-            # try:
-            #     nsml.report(
-            #             val__loss=loss.item(),
-            #             step=epoch)
-            # except ImportError:
-            #     pass
 
-        # if USE_NSML:
-        #     ori_pic = self.denorm(input_var[0:4])
-        #     self.viz.images(ori_pic, opts=dict(title='Original_' + str(epoch)))
-        #     gt_mask = to_rgb(target_var[0:4])
-        #     self.viz.images(gt_mask, opts=dict(title='GT_mask_' + str(epoch)))
-        #     model_mask = to_rgb(output_label[0:4].cpu())
-        #     self.viz.images(model_mask, opts=dict(title='Model_mask_' + str(epoch)))
